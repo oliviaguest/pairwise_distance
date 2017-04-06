@@ -5,7 +5,7 @@ import scipy.spatial.distance
 import numpy as np
 import sklearn.datasets
 from time import time
-from multiprocessing import Pool
+import multiprocessing as mp
 from itertools import combinations
 # Generate some data ###########################################################
 N = 100
@@ -45,14 +45,35 @@ def calculate_pairwise_distance(a, b):
 # print '{} s'.format(time() -t)
 ################################################################################
 # And finally the way I want to with multiprocessing ###########################
-p = Pool(4)
+p = mp.Pool(20)
 results = []
 t = time()
 for comb in combinations(xrange(X.shape[0]), 2):
     arg = (X[comb[0]].copy(), X[comb[1]].copy())
     results.append(p.apply_async(calculate_pairwise_distance, arg))
+# print results.get()
 print sum(res.get() for res in results)
 print '{} s'.format(time() -t)
+################################################################################
+# A different way with multiprocessing that does not work! #####################
+# Traceback (most recent call last):
+#   File "pairwise_distance.py", line 63, in <module>
+#     results.append(pool.map(calculate_pairwise_distance, X[comb[0]], X[comb[1]]))
+#   File "/home/olivia/anaconda2/lib/python2.7/multiprocessing/pool.py", line 251, in map
+#     return self.map_async(func, iterable, chunksize).get()
+#   File "/home/olivia/anaconda2/lib/python2.7/multiprocessing/pool.py", line 314, in map_async
+#     result = MapResult(self._cache, chunksize, len(iterable), callback)
+#   File "/home/olivia/anaconda2/lib/python2.7/multiprocessing/pool.py", line 594, in __init__
+#     if chunksize <= 0:
+# ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+# t = time()
+# pool = mp.Pool(processes=mp.cpu_count())
+# for comb in combinations(xrange(X.shape[0]), 2):
+#     results.append(pool.map(calculate_pairwise_distance, X[comb[0]], X[comb[1]]))
+# pool.close()
+# print sum(res.get() for res in results)
+# print '{} s'.format(time() -t)
+################################################################################
 t = time()
 distance = 0
 N = X.shape[0]
