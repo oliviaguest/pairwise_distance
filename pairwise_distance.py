@@ -12,7 +12,7 @@ from itertools import combinations
 import memory
 
 def do_job(data_slice, job_index, queue):
-    print job_index, data_slice.shape
+    # print job_index, data_slice.shape
     partial_sum = 0
     for points in data_slice:
         # Each data_slice has tuples consisting of two points that we need to find the
@@ -20,6 +20,11 @@ def do_job(data_slice, job_index, queue):
         partial_sum += np.sum(np.sqrt(np.sum((points[0] - points[1])**2, axis=1)))
     queue.put(partial_sum)
 
+# If you want to memory profile this funtion to see it is roughly constant, feel
+# free to comment out the decorator and run with memory_profiler (install it)
+# as below:
+# python -m memory_profiler pairwise_distance.py
+# @profile
 def dispatch_jobs(X, job_number):
     N = X.shape[0]
     # Get the pairs to calculate the distances without needing the whole of X:
@@ -46,7 +51,7 @@ def dispatch_jobs(X, job_number):
 
 if __name__ == "__main__":
     # Generate some data:
-    N = 1000
+    N = 5000
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
