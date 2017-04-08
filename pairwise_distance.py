@@ -9,8 +9,6 @@ import multiprocessing as mp
 from time import time
 from itertools import combinations
 
-import memory
-
 def do_job(data_slice, job_index, queue):
     # print job_index, data_slice.shape
     partial_sum = 0
@@ -21,7 +19,7 @@ def do_job(data_slice, job_index, queue):
     queue.put(partial_sum)
 
 # If you want to memory profile this funtion to see it is roughly constant, feel
-# free to comment out the decorator and run with memory_profiler (install it)
+# free to comment in the decorator and run with memory_profiler (install it)
 # as below:
 # python -m memory_profiler pairwise_distance.py
 # @profile
