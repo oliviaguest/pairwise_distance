@@ -1,6 +1,10 @@
 # pairwise_distance
 
 This code takes a set of 2D data points ```X``` and calculates the sum and the mean of the pairwise Euclidean distances between the points in parallel. 
+To call use (```weights``` and ```n_jobs``` are optional): 
+``` python
+parallel_sum, parallel_mean = mean_pairwise_distance(X, weights = how_to_weight_each_X, n_jobs = how_many_cores_to_use)
+```
 
 In theory it is equivalent to the following (where ```N = X.shape[0]``` and ```counts``` is an array of length ```N``` with counts per ```X``` value):
 ``` python
