@@ -20,3 +20,6 @@ In theory it is equivalent to the following (where ```N = X.shape[0]``` and ```c
 Importantly, however, it will not run out of memory for huge ```X```s (assuming ```X``` itself can fit into RAM).
 Space complexity is constant. 
 
+# Authors
+* _Code_: Olivia Guest [@oliviaguest](http://github.com/oliviaguest) [oliviaguest.com](http://oliviaguest.com)
+* _Algorithm_: Bradley C. Love [@lovebc](http://github.com/lovebc) [bradlove.org](http://bradlove.org)
