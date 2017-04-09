@@ -1,4 +1,3 @@
-# import dask.dataframe as dd
 import dask
 import sklearn.datasets
 import scipy.spatial.distance
@@ -8,13 +7,12 @@ import numpy as np
 
 from time import time
 
-# from dask import delayed, value
 
 # Generate some data:
 # for i in range(100): # you can create huge arrays here and won't kill RAM
 # because of how cool dask is!
-for i in range(1):
-    N = 5000
+for i in range(100):
+    N = 1000
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
