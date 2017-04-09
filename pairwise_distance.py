@@ -10,6 +10,11 @@ from time import time
 from math import factorial
 from itertools import combinations
 
+##############################
+# Code: Olivia Guest         #
+# Algorithm: Bradley C. Love #
+##############################
+
 def do_job(data_slice, job_index, queue):
     # print job_index, data_slice.shape
     partial_sum = 0
