@@ -49,7 +49,7 @@ def dispatch_jobs(X, job_number):
 
 if __name__ == "__main__":
     # Generate some data:
-    N = 100000
+    N = 10000
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
