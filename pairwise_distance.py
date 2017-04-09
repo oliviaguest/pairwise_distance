@@ -16,11 +16,6 @@ def do_job(data_slice, job_index, queue):
         # Each data_slice has tuples consisting of two points that we need to find the
         # Euclidean distance between and their weight:
         partial_sum +=  np.sum(points[2] * np.sqrt(np.sum((points[0] - points[1])**2, axis=1)))
-
-        # print points[2].T
-        # print np.sqrt(np.sum((points[0] - points[1])**2, axis=1))
-        # print
-
     queue.put(partial_sum)
 
 # If you want to memory profile this funtion to see it is roughly constant, feel
@@ -32,13 +27,6 @@ def dispatch_jobs(X, w, job_number):
     N = X.shape[0]
     # Get the pairs to calculate the distances without needing the whole of X:
     pairs = [(X[i:], X[:N - i], w[i:] * w[:N - i]) for i in xrange(1, N)]
-    # for pair in pairs:
-    #     print pair[0]
-    #     print pair[1]
-    #     print pair[2]
-    # weights = [w[i:] * w[:N - i] for i in xrange(1, N)]
-    # print pairs
-    # print weights
     # Create slices of the pairs to send to each worker:
     pairs_slices = np.array_split(pairs, job_number)
     # weights_slices = np.array_split(pairs, job_number)
@@ -51,7 +39,6 @@ def dispatch_jobs(X, w, job_number):
         # Create a job and append it to the list of jobs:
         jobs.append(mp.Process(
             target=do_job, args=(pairs_slice, i, queues[i])))
-        # print i, s
     # Start all the jobs:
     for j in jobs:
         j.start()
@@ -79,7 +66,6 @@ if __name__ == "__main__":
     N = X.shape[0]
     # Pick some random floats for the counts/weights:
     counts = np.random.random_sample((N,)) * 10
-    # counts = np.asarray([1,5,1,2])
 
     # Parallel:
     t = time()
