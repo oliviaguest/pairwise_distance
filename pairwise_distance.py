@@ -28,6 +28,16 @@ def do_job(data_slice, job_index, queue):
 # python -m memory_profiler pairwise_distance.py
 # @profile
 def mean_pairwise_distance(X, weights = None, n_jobs = None):
+    """Function that returns the sum and mean of the pairwise distances of an 2D
+    array X.
+
+    Required arguments:
+    X       --  2D array of points.
+
+    Optional arguments:
+    weights -- 1D array of counts or weights per point in X (default: 1s).
+    n_jobs  -- Numper of cores to use for calulation (default: all`).
+    """
     N = X.shape[0]
     if weights is None:
         weights = np.ones((N,))
