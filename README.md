@@ -21,5 +21,5 @@ Importantly, however, it will not run out of memory for huge ```X```s (assuming 
 Space complexity is constant. 
 
 # Authors
-* _Code_: Olivia Guest [@oliviaguest](http://github.com/oliviaguest) [oliviaguest.com](http://oliviaguest.com)
-* _Algorithm_: Bradley C. Love [@lovebc](http://github.com/lovebc) [bradlove.org](http://bradlove.org)
+* __Code__: Olivia Guest [@oliviaguest](http://github.com/oliviaguest) [oliviaguest.com](http://oliviaguest.com)
+* __Algorithm__: Bradley C. Love [@lovebc](http://github.com/lovebc) [bradlove.org](http://bradlove.org)
