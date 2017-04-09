@@ -55,4 +55,4 @@ Y = scipy.spatial.distance.pdist(X, 'euclidean')
 print 'serial:\t\t{} s'.format(time() - t)
 assert np.round(np.sum(Y)) == np.round(
     my_sum)  # There is minor rounding error after 8 decimal places.
-print 'sum = {} s'.format(my_sum)
+print 'sum = {}'.format(my_sum)
