@@ -7,6 +7,7 @@ import numpy as np
 import multiprocessing as mp
 
 from time import time
+from math import factorial
 from itertools import combinations
 
 def do_job(data_slice, job_index, queue):
@@ -33,8 +34,6 @@ def dispatch_jobs(X, w, job_number):
     pairs = [(X[i:], X[:N - i], w[i:] * w[:N - i]) for i in xrange(1, N)]
     # Create slices of the pairs to send to each worker:
     pairs_slices = np.array_split(pairs, job_number)
-    # weights_slices = np.array_split(pairs, job_number)
-
     jobs = []
     queues = []
     for i, pairs_slice in enumerate(pairs_slices):
@@ -50,7 +49,13 @@ def dispatch_jobs(X, w, job_number):
     queue_sum = 0
     for q in queues:
         queue_sum += q.get()
-    return queue_sum
+    # Compute the number of combinations, add them to the number of unique pairs
+    # and use that as the denominator to calculate the mean pairwise distance:
+    mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
+    # If you do not want to include distance from an item to itself use:
+    # mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2.0)
+
+    return queue_sum, mean
 
 if __name__ == "__main__":
     # Generate some data:
@@ -68,26 +73,33 @@ if __name__ == "__main__":
         centers=centers, cluster_std=cluster_std)
     X = np.concatenate((data, extra), axis=0)
     N = X.shape[0]
+
     # Pick some random floats for the counts/weights:
     counts = np.random.random_sample((N,)) * 10
 
-    # Parallel: ################################################################
+    ############################################################################
+    # Parallel:
+    # Parallelised code partially based on:
+    # https://gist.github.com/baojie/6047780
     t = time()
-    my_sum = dispatch_jobs(X, counts, mp.cpu_count())
+    parallel_sum, parallel_mean = dispatch_jobs(X, counts, mp.cpu_count())
     print 'parallel:\t{} s'.format(time() - t)
     ############################################################################
 
-    # Serial: ##################################################################
+    ############################################################################
+    # Serial:
     # Comment this out if you use a high N as it will eat RAM!
-    # SERIOUSLY, be careful.
     t = time()
     Y = scipy.spatial.distance.pdist(X, 'euclidean')
     weights = [counts[i] * counts[j]
                for i in xrange(N - 1) for j in xrange(i + 1, N)]
-    weighted_sum = np.sum(weights * Y)
+    serial_sum = np.sum(weights * Y)
+    serial_mean = serial_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
     print 'serial:\t\t{} s'.format(time() - t)
-    assert np.round(weighted_sum) == np.round(
-        my_sum)  # There is minor rounding error after 8 decimal places.
     ############################################################################
-    
-    print 'sum = {}'.format(my_sum)
+
+  # There is minor rounding error, but check for equality:
+    assert np.round(serial_sum) == np.round(parallel_sum)
+    assert np.round(serial_mean) == np.round(parallel_mean)
+    print 'sum = {}'.format(parallel_sum)
+    print 'mean = {}'.format(parallel_mean)
