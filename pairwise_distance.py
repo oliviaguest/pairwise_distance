@@ -36,7 +36,7 @@ def mean_pairwise_distance(X, weights = None, n_jobs = None):
 
     Optional arguments:
     weights -- 1D array of counts or weights per point in X (default: 1s).
-    n_jobs  -- Numper of cores to use for calulation (default: all`).
+    n_jobs  -- Numper of cores to use for calulation (default: all).
     """
     N = X.shape[0]
     if weights is None:
