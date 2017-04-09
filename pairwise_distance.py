@@ -27,13 +27,18 @@ def do_job(data_slice, job_index, queue):
 # as below:
 # python -m memory_profiler pairwise_distance.py
 # @profile
-def dispatch_jobs(X, w, job_number):
+def mean_pairwise_distance(X, weights = None, n_jobs = None):
     N = X.shape[0]
+    if weights is None:
+        weights = np.ones((N,))
+    if n_jobs is None:
+        n_jobs = mp.cpu_count()
     # Get the pairs and their weights to calculate the distances without needing
     # the whole of X:
-    pairs = [(X[i:], X[:N - i], w[i:] * w[:N - i]) for i in xrange(1, N)]
+    pairs = [(X[i:], X[:N - i], weights[i:] * weights[:N - i])
+             for i in xrange(1, N)]
     # Create slices of the pairs to send to each worker:
-    pairs_slices = np.array_split(pairs, job_number)
+    pairs_slices = np.array_split(pairs, n_jobs)
     jobs = []
     queues = []
     for i, pairs_slice in enumerate(pairs_slices):
@@ -54,7 +59,6 @@ def dispatch_jobs(X, w, job_number):
     mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
     # If you do not want to include distance from an item to itself use:
     # mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2.0)
-
     return queue_sum, mean
 
 if __name__ == "__main__":
@@ -76,13 +80,15 @@ if __name__ == "__main__":
 
     # Pick some random floats for the counts/weights:
     counts = np.random.random_sample((N,)) * 10
-
     ############################################################################
     # Parallel:
     # Parallelised code partially based on:
     # https://gist.github.com/baojie/6047780
     t = time()
-    parallel_sum, parallel_mean = dispatch_jobs(X, counts, mp.cpu_count())
+    parallel_sum, parallel_mean = mean_pairwise_distance(X,
+                                                         weights = counts,
+                                                         n_jobs = mp.cpu_count()
+                                                        )
     print 'parallel:\t{} s'.format(time() - t)
     ############################################################################
 
@@ -98,7 +104,7 @@ if __name__ == "__main__":
     print 'serial:\t\t{} s'.format(time() - t)
     ############################################################################
 
-  # There is minor rounding error, but check for equality:
+    # There is minor rounding error, but check for equality:
     assert np.round(serial_sum) == np.round(parallel_sum)
     assert np.round(serial_mean) == np.round(parallel_mean)
     print 'sum = {}'.format(parallel_sum)

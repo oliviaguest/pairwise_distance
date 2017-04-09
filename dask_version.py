@@ -1,3 +1,5 @@
+# This can probably prove very useful but since I have the other version working I will try it first. 
+
 import dask
 import sklearn.datasets
 import scipy.spatial.distance
