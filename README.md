@@ -17,6 +17,6 @@ In theory it is equivalent to the following (where ```N = X.shape[0]``` and ```c
     serial_mean = serial_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
 ```
 
-Importantly, however, it will not run out of memory for huge ```X```s (assuming X itself can fit into RAM).
+Importantly, however, it will not run out of memory for huge ```X```s (assuming ```X``` itself can fit into RAM).
 Space complexity is constant. 
 
