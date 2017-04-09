@@ -25,9 +25,10 @@ for i in range(100):
     extra, labels_true = sklearn.datasets.make_blobs(n_samples=int(0.25 * N),
                                                      centers=centers, cluster_std=cluster_std)
     try:
-        X = da.concatenate([X, np.concatenate((data, extra), axis=0)], axis=0)
-    except:
-        X = da.from_array(np.concatenate((data, extra), axis=0), chunks= (1000, 1000))
+        X = da.concatenate([X, da.from_array(np.concatenate((data, extra), axis=0), chunks=(1000,2))], axis=0)
+    except NameError:
+        X = da.from_array(np.concatenate((data, extra), axis=0), chunks= (1000, 2))
+
 N = X.shape[0]
 del data, extra, labels_true
 
@@ -51,3 +52,4 @@ print 'serial:\t\t{} s'.format(time() - t)
 assert np.round(np.sum(Y)) == np.round(
         my_sum) # There is minor rounding error after 8 decimal places.
 print 'sum = {} s'.format(my_sum)
+print 'array size:', X.shape, N
