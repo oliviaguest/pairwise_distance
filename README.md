@@ -1,6 +1,6 @@
 # pairwise_distance
 
-This code takes a set of 2D data points ```X``` and calculates the sum and the mean of the pairwise Euclidean distances. 
+This code takes a set of 2D data points ```X``` and calculates the sum and the mean of the pairwise Euclidean distances between the points in parallel. 
 
 In theory it is equivalent to the following (where ```N = X.shape[0]``` and ```counts``` is an array of length ```N``` with counts per ```X``` value):
 ``` python
