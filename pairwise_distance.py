@@ -62,13 +62,16 @@ if __name__ == "__main__":
     extra, labels_true = sklearn.datasets.make_blobs(n_samples=int(0.25 * N),
                                                      centers=centers, cluster_std=cluster_std)
     X = np.concatenate((data, extra), axis=0)
+    N = X.shape[0]
 
+    # Parallel:
     t = time()
     my_sum = dispatch_jobs(X, mp.cpu_count())
     # I have 32 cores, this gives good performance:
     # my_sum = dispatch_jobs(X, mp.cpu_count() - 4)
     print 'parallel:\t{} s'.format(time() - t)
 
+    # Serial:
     # Comment this out if you use a high N as it will eat RAM!
     # SERIOUSLY, be careful.
     t = time()
