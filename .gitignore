@@ -95,3 +95,7 @@ ENV/
 
 # mkdocs documentation
 /site
+
+# memory_profiler/mprof
+mprofile_*.dat
+memory_profile.png
