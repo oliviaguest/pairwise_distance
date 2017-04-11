@@ -19,7 +19,14 @@ In theory it is equivalent to the following (where ```N = X.shape[0]``` and ```c
 ```
 
 Importantly, however, it will not run out of memory for huge ```X```s (assuming ```X``` itself can fit into RAM).
-Space complexity is constant. 
+Space complexity is constant.
+
+## Tests
+Testing this module using `pytest` and `memory_profiler` can be easily invoked using `make`.
+* `make test` will run the basic assertion tests.
+* `make memory` will run the memory profiler and display a plot of the processes.
+* `make save_plot` will save a plot of the most recent memory profiling data as a png.
+* `make clean` will delete all the data files created by the memory profiler.
 
 ## Authors
 * __Code__: Olivia Guest [@oliviaguest](http://github.com/oliviaguest) [oliviaguest.com](http://oliviaguest.com)
