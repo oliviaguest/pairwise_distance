@@ -1,5 +1,6 @@
 # pairwise_distance
 
+## Usage
 This code takes a set of 2D data points ```X``` and calculates the sum and the mean of the pairwise Euclidean distances between the points in parallel. 
 To call use (```weights``` and ```n_jobs``` are optional): 
 ``` python
@@ -20,3 +21,6 @@ In theory it is equivalent to the following (where ```N = X.shape[0]``` and ```c
 Importantly, however, it will not run out of memory for huge ```X```s (assuming ```X``` itself can fit into RAM).
 Space complexity is constant. 
 
+## Authors
+* __Code__: Olivia Guest [@oliviaguest](http://github.com/oliviaguest) [oliviaguest.com](http://oliviaguest.com)
+* __Algorithm__: Bradley C. Love [@lovebc](http://github.com/lovebc) [bradlove.org](http://bradlove.org)
