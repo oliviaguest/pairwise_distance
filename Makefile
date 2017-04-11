@@ -10,4 +10,3 @@ save_plot:
 
 clean:
 	rm mprofile_*.dat
-
