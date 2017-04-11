@@ -14,13 +14,12 @@ import numpy as np
 ##############################
 
 
-def do_job(data_slice, queue):
+def batch_pdist(data_slice):
     # Each data_slice has tuples consisting of two points that we need to
     # find the Euclidean distance between and their weight:
     # points[2] are the weights for the pair points[0] and points[1]
-    slice_sum = np.sum(np.dot(weights, np.sqrt(np.sum((X - Y)**2, axis=1)))
-                       for X, Y, weights in data_slice)
-    queue.put(slice_sum)
+    return np.sum(np.dot(weights, np.sqrt(np.sum((X - Y)**2, axis=1)))
+                  for X, Y, weights in data_slice)
 
 # If you want to memory profile this funtion to see it is roughly constant,
 # feel free to comment in the decorator and run with memory_profiler (install
@@ -48,27 +47,24 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
         n_jobs = mp.cpu_count()
 
     # Get the pairs and their weights to calculate the distances without
-    # needing the whole of X:
-    pairs = [(X[i:], X[:N - i], weights[i:] * weights[:N - i])
-             for i in xrange(1, N)]
-    # Create approximately equal splits of the pairs for each cpu:
-    pairs_slices = np.array_split(pairs, n_jobs)
+    # needing the whole of X, split it into roughly equal sub-arrays per cpu:
+    pairs_split = np.array_split([(X[i:], X[:N-i], weights[i:] * weights[:N-i])
+                                 for i in xrange(1, N)],
+                                 n_jobs, axis=axis)
 
-    # Make queues to collect results and processes to do the calculations:
-    queues = [mp.Queue() for i in xrange(n_jobs)]
-    jobs = [mp.Process(target=do_job, args=(pairs_slice, queue))
-            for queue, pairs_slice in zip(queues, pairs_slices)]
-
-    # Start all the jobs, aggregate the sum when they finish:
-    for j in jobs:
-        j.start()
-    queue_sum = sum(q.get() for q in queues)
+    # Create a pool for each cpu to send the batch_dist function to each split.
+    # Then, close the pool and wait for jobs to complete before continuing:
+    pool = mp.Pool(processes=n_jobs)
+    queue_sum = sum(pool.map(batch_pdist, pairs_split, chunksize=N//n_jobs))
+    pool.close()
+    pool.join()
 
     # Compute the number of combinations, add to the number of unique pairs
     # and use that as the denominator to calculate the mean pairwise distance:
     mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
     # If you do not want to include distance from an item to itself use:
     # mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2.0)
+
     return queue_sum, mean
 
 if __name__ == "__main__":
