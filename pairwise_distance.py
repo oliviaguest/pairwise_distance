@@ -32,8 +32,8 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
     if weights is None:
         weights = np.ones((N,))
     if n_jobs is None:
-        nn_jobs=min(mp.cpu_count(),N)
-        
+        nn_jobs = min(mp.cpu_count(),N)
+
     # Get the pairs and their weights to calculate the distances without
     # needing the whole of X, split it into roughly equal sub-arrays per cpu:
     pairs_split = np.array_split([(X[i:], X[:N-i], weights[i:] * weights[:N-i])
