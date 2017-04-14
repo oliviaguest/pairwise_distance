@@ -15,34 +15,20 @@ from scipy.spatial.distance import pdist
 # Algorithm: Bradley C. Love #
 ##############################
 
-def dfun(u, v):
-    return great_circle(u, v).km
+
 
 def batch_pdist(data_slice):
     # Each data_slice has tuples consisting of two points that we need to
     # find the great circle distance between and their weight:
-    # points[2] are the weights for the pair points[0] and points[1]
-    return np.sum(np.dot(weights, np.sqrt(np.sum((X - Y)**2, axis=1)))
-                  for X, Y, weights in data_slice)
-    # Trying to convert to using great_circle distance, below doesn't work...
-    # partial_sum = 0
-    # for i, points in enumerate(data_slice):
-    #     # Each data_slice has tuples consisting of two points that we need to find the
-    #     # Euclidean distance between and their weight:
-    #     # points[2] are the weights for the pair points[0] and points[1]
-    #     dist = []
-    #     for y in points[1]:
-    #
-    #         for x in points[0]:
-    #             dist.append(dfun(x, y))
-    #     partial_sum += np.sum(points[2] *
-    #                           #   np.sqrt(np.sum((points[0] - points[1])**2
-    #                           # np.linalg.norm(points[0] - points[1], axis=1)
-    #                           sum_dist
-    #                           #   , axis=1))
-    #                           )
+    partial_sum = 0
+    for X, Y, weights in data_slice:
+        dist = np.array([])
+        zipped = zip(X, Y)
+        for x, y in zipped:
+            dist = np.append(dist, great_circle(x, y).km)
+        partial_sum += np.sum(weights * dist )
     return partial_sum
-
+    # return 10
 
 def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
     """Function that returns the sum and mean of the pairwise distances of an 2D
@@ -60,7 +46,7 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
     if weights is None:
         weights = np.ones((N,))
     if n_jobs is None:
-        n_jobs = mp.cpu_count()
+        nn_jobs = min(mp.cpu_count(),N)
 
     # Get the pairs and their weights to calculate the distances without
     # needing the whole of X, split it into roughly equal sub-arrays per cpu:
@@ -81,13 +67,12 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
     # If you do not want to include distance from an item to itself use:
     # mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2.0)
 
-    print queue_sum, mean
     return queue_sum, mean
 
 
 if __name__ == "__main__":
     # Generate some data:
-    N = 100
+    N = 1000
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
@@ -104,15 +89,14 @@ if __name__ == "__main__":
 
     # Pick some random floats for the counts/weights:
     counts = np.random.random_sample((N,)) * 10
-    # counts = np.ones((N,))
     ##########################################################################
     # Parallel:
     # Parallelised code partially based on:
     # https://gist.github.com/baojie/6047780
     t = time()
     parallel_sum, parallel_mean = mean_pairwise_distance(X,
-                                                         weights=counts,
-                                                         n_jobs=mp.cpu_count()
+                                                 weights=counts,
+                                                 n_jobs=min(mp.cpu_count(),N)
                                                          )
     print 'parallel:\t{} s'.format(time() - t)
     ##########################################################################
@@ -121,8 +105,9 @@ if __name__ == "__main__":
     # Serial:
     # Comment this out if you use a high N as it will eat RAM!
     t = time()
+    def dfun(u, v):
+        return great_circle(u, v).km
     Y = pdist(X, metric=dfun)
-    # Y = pdist(X, 'Euclidean')
     weights = [counts[i] * counts[j]
                for i in xrange(N - 1) for j in xrange(i + 1, N)]
     serial_sum = np.sum(weights * Y)
@@ -132,7 +117,6 @@ if __name__ == "__main__":
     ##########################################################################
 
     # There is minor rounding error, but check for equality:
-    print serial_sum, parallel_sum
     assert np.round(serial_sum) == np.round(parallel_sum)
     assert np.round(serial_mean) == np.round(parallel_mean)
     print 'sum = {}'.format(parallel_sum)
