@@ -25,7 +25,7 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
 
     Optional arguments:
     weights -- 1D array of counts or weights per point in X (default: 1s).
-    n_jobs  -- Number of cores to use for calulation (default: all).
+    n_jobs  -- Number of cores to use for calculation (default: all).
     axis    -- The axis of X corresponding to data elements (default: 0).
     """
     N = X.shape[axis]
