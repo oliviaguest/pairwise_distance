@@ -49,6 +49,7 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
 
     # Compute the number of combinations, add to the number of unique pairs
     # and use that as the denominator to calculate the mean pairwise distance:
+    N = weights.sum()
     mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
     # If you do not want to include distance from an item to itself use:
     # mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2.0)
