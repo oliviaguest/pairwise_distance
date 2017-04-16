@@ -57,7 +57,7 @@ if __name__ == "__main__":
     from scipy.spatial.distance import pdist
 
     # Generate some data:
-    N = 10
+    N = 5
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
@@ -77,8 +77,6 @@ if __name__ == "__main__":
     counts = np.ones((N,))
     ##########################################################################
     # Parallel:
-    # Parallelised code partially based on:
-    # https://gist.github.com/baojie/6047780
     t = time()
     parallel_sum = pdistsum(X, counts, dfun, k=2) # example with 4 threads
     print('parallel:\t{} s'.format(time() - t))
