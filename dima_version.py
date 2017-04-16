@@ -18,11 +18,11 @@ def pdistsum(X, w, dist, k=1):
     def rsum(r0, r1, num):
         s = 0.0 # partial sums
         c = 0 # partial counts
-        print("rsum instance "+str(num)+" from "+str(r0)+" to "+str(r1))
+        print("rsum instance:", str(num) + " from " + str(r0)+ " to " + str(r1))
         for i in xrange(r0,r1):
             for j in xrange(i+1,N):
                 c += 1
-                s += dist(X[i],X[j])
+                s += dist(X[i],X[j]) * w[i] * w[j]
         results[num]=(s,c)
         return
 
@@ -37,8 +37,10 @@ def pdistsum(X, w, dist, k=1):
         threads[i].join()
     total_sum = 0
     for result in results:
-        total_sum += results[0][0]
-    return total_sum
+        total_sum += result[0]
+    N = w.sum()
+    total_mean = total_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
+    return total_sum, total_mean
 
 ### testing ####
 def dfun(a,b): #  example of dist() between 2 numbers
@@ -57,7 +59,7 @@ if __name__ == "__main__":
     from scipy.spatial.distance import pdist
 
     # Generate some data:
-    N = 5
+    N = 783
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
@@ -73,12 +75,12 @@ if __name__ == "__main__":
     N = X.shape[0]
 
     # Pick some random floats for the counts/weights:
-    # counts = np.random.random_sample((N,)) * 10
-    counts = np.ones((N,))
+    counts = np.random.random_sample((N,)) * 10
+    # counts = np.ones((N,))
     ##########################################################################
     # Parallel:
     t = time()
-    parallel_sum = pdistsum(X, counts, dfun, k=2) # example with 4 threads
+    parallel_sum, parallel_mean = pdistsum(X, counts, dfun, k=2) # example with 4 threads
     print('parallel:\t{} s'.format(time() - t))
     ##########################################################################
 
@@ -96,8 +98,8 @@ if __name__ == "__main__":
     ##########################################################################
 
     # There is minor rounding error, but check for equality:
-    print(parallel_sum, serial_sum)
     assert np.round(serial_sum) == np.round(parallel_sum)
-    assert np.round(serial_mean) == np.round(parallel_mean)
     print('sum = {}'.format(parallel_sum))
+
+    assert np.round(serial_mean) == np.round(parallel_mean)
     print('mean = {}'.format(parallel_mean))

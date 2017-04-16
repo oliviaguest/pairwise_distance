@@ -71,7 +71,7 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
 
 if __name__ == "__main__":
     # Generate some data:
-    N = 1000
+    N = 10
     centers = [[0, 0], [1, 0], [0.5, np.sqrt(0.75)]]
     cluster_std = [0.3, 0.3, 0.3]
     n_clusters = len(centers)
