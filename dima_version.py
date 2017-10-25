@@ -5,6 +5,7 @@
 
 from __future__ import division, print_function
 
+
 def pdistsum(X, w, dist, k=1):
     """
     compute distances, given by dist(,), between elements of X, weighted by w
@@ -13,24 +14,26 @@ def pdistsum(X, w, dist, k=1):
     import threading
     from math import sqrt, ceil
     N = len(X)
-    results = [None]*k
+    results = [None] * k
 
     def rsum(r0, r1, num):
-        s = 0.0 # partial sums
-        c = 0 # partial counts
-        print("rsum instance:", str(num) + " from " + str(r0)+ " to " + str(r1))
-        for i in xrange(r0,r1):
-            for j in xrange(i+1,N):
+        s = 0.0  # partial sums
+        c = 0  # partial counts
+        print("rsum instance:", str(num) +
+              " from " + str(r0) + " to " + str(r1))
+        for i in xrange(r0, r1):
+            for j in xrange(i + 1, N):
                 c += 1
-                s += dist(X[i],X[j]) * w[i] * w[j]
-        results[num]=(s,c)
+                s += dist(X[i], X[j]) * w[i] * w[j]
+        results[num] = (s, c)
         return
 
     # k+1 ranges: 0,N(1-sqrt((k-1)/k)),N(1-sqrt((k-2)/k)),...,N
-    r = [0]+map(lambda i: int(ceil(N*(1-sqrt((k-i)/k)))), xrange(1,k))+[N]
+    r = [0] + map(lambda i: int(ceil(N * (1 - sqrt((k - i) / k)))),
+                  xrange(1, k)) + [N]
     threads = []
     for i in range(k):
-        t = threading.Thread(target=rsum, args=(r[i],r[i+1],i,))
+        t = threading.Thread(target=rsum, args=(r[i], r[i + 1], i,))
         threads.append(t)
         t.start()
     for i in range(k):
@@ -39,15 +42,18 @@ def pdistsum(X, w, dist, k=1):
     for result in results:
         total_sum += result[0]
     N = w.sum()
-    total_mean = total_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
+    total_mean = total_sum / (N * (N - 1.0) / 2.0)
     return total_sum, total_mean
 
 ### testing ####
-def dfun(a,b): #  example of dist() between 2 numbers
+
+
+def dfun(a, b):  # example of dist() between 2 numbers
     # from math import sqrt
     # return sqrt(abs(a-b))
     from geopy.distance import great_circle
-    return great_circle(a,b).km
+    return great_circle(a, b).km
+
 
 if __name__ == "__main__":
     import sklearn.datasets
@@ -65,12 +71,12 @@ if __name__ == "__main__":
     n_clusters = len(centers)
     n_samples = int(0.75 * N)
     data, labels_true = sklearn.datasets.make_blobs(n_samples=n_samples,
-        centers=centers, cluster_std=cluster_std)
+                                                    centers=centers, cluster_std=cluster_std)
     centers = [[0.5, np.sqrt(0.75)]]
     cluster_std = [0.3]
     n_clusters = len(centers)
     extra, labels_true = sklearn.datasets.make_blobs(n_samples=int(0.25 * N),
-        centers=centers, cluster_std=cluster_std)
+                                                     centers=centers, cluster_std=cluster_std)
     X = np.concatenate((data, extra), axis=0)
     N = X.shape[0]
 
@@ -80,7 +86,8 @@ if __name__ == "__main__":
     ##########################################################################
     # Parallel:
     t = time()
-    parallel_sum, parallel_mean = pdistsum(X, counts, dfun, k=2) # example with 4 threads
+    parallel_sum, parallel_mean = pdistsum(
+        X, counts, dfun, k=10)  # example with 4 threads
     print('parallel:\t{} s'.format(time() - t))
     ##########################################################################
 

@@ -1,4 +1,5 @@
-# This can probably prove very useful but since I have the other version working I will try it first. 
+# This can probably prove very useful but since I have the other version
+# working I will try it first.
 
 import dask
 import sklearn.datasets
@@ -19,12 +20,12 @@ for i in range(1):
     n_clusters = len(centers)
     n_samples = int(0.75 * N)
     data, labels_true = sklearn.datasets.make_blobs(n_samples=n_samples,
-        centers=centers, cluster_std=cluster_std)
+                                                    centers=centers, cluster_std=cluster_std)
     centers = [[0.5, np.sqrt(0.75)]]
     cluster_std = [0.3]
     n_clusters = len(centers)
     extra, labels_true = sklearn.datasets.make_blobs(n_samples=int(0.25 * N),
-         centers=centers, cluster_std=cluster_std)
+                                                     centers=centers, cluster_std=cluster_std)
     try:
         X = da.concatenate([X, da.from_array(np.concatenate(
             (data, extra), axis=0), chunks=(1000, 2))], axis=0)
@@ -35,9 +36,11 @@ for i in range(1):
 N = X.shape[0]
 del data, extra, labels_true
 
+
 def distance(a, b):
     """ Slow version of ``add`` to simulate work """
     return np.sum(np.sqrt(np.sum((a - b)**2, axis=1)))
+
 
 # Parallel:
 t = time()

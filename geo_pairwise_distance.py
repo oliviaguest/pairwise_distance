@@ -62,7 +62,7 @@ def mean_pairwise_distance(X, weights=None, n_jobs=None, axis=0):
     N = weights.sum()
     # Compute the number of combinations, add to the number of unique pairs
     # and use that as the denominator to calculate the mean pairwise distance:
-    mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
+    mean = queue_sum / (N * (N - 1.0) / 2.0)
     # If you do not want to include distance from an item to itself use:
     # mean = queue_sum / (((N - 1)**2 + (N + 1)) / 2.0)
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
                for i in xrange(N - 1) for j in xrange(i + 1, N)]
     serial_sum = np.sum(weights * Y)
     N = counts.sum()
-    serial_mean = serial_sum / (((N - 1)**2 + (N + 1)) / 2 + N)
+    serial_mean = serial_sum / (N * (N - 1.0) / 2.0)
     print 'serial:\t\t{} s'.format(time() - t)
     ##########################################################################
 
